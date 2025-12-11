@@ -15,14 +15,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X, Upload, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EventFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: EventFormValues) => void;
-  initialData?: EventFormValues | null; // Data untuk Edit
+  initialData?: EventFormValues | null;
 }
 
 export function EventForm({
@@ -57,22 +57,17 @@ export function EventForm({
     },
   });
 
-  // Efek untuk mengisi form saat mode Edit (initialData berubah)
   useEffect(() => {
     if (initialData) {
-      // Mode Edit: Isi form dengan data lama
       reset({
         ...initialData,
-        // Pastikan format tanggal cocok dengan input datetime-local (YYYY-MM-DDTHH:mm)
         startDate: new Date(initialData.startDate).toISOString().slice(0, 16),
         endDate: new Date(initialData.endDate).toISOString().slice(0, 16),
       });
-      // Set preview gambar jika string URL
       if (typeof initialData.image === "string") {
         setImagePreview(initialData.image);
       }
     } else {
-      // Mode Create: Kosongkan form
       reset({
         ticketType: "Paid",
         price: 0,
@@ -94,15 +89,13 @@ export function EventForm({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setValue("image", file); // Set value ke React Hook Form
+      setValue("image", file);
       const objectUrl = URL.createObjectURL(file);
-      setImagePreview(objectUrl); // Set preview lokal
+      setImagePreview(objectUrl);
     }
   };
 
   const submitHandler = (data: EventFormValues) => {
-    // Di real app, disini kita upload gambar ke storage (AWS S3/Cloudinary)
-    // Untuk mock, kita biarkan object File atau string URL lewat
     onSubmit(data);
     onOpenChange(false);
   };
@@ -166,12 +159,12 @@ export function EventForm({
               </div>
             </div>
 
-            {/* Nama Event */}
+            {/* Event Name */}
             <div className="grid gap-2">
-              <Label htmlFor="title">Nama Event</Label>
+              <Label htmlFor="title">Event Name</Label>
               <Input
                 id="title"
-                placeholder="Contoh: Java Jazz Festival"
+                placeholder="Ex: Band Festival"
                 {...register("title")}
               />
               {errors.title && (
@@ -179,10 +172,10 @@ export function EventForm({
               )}
             </div>
 
-            {/* Kategori & Lokasi */}
+            {/* Category & Location */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Kategori</Label>
+                <Label>Category</Label>
                 <Controller
                   name="category"
                   control={control}
@@ -192,7 +185,7 @@ export function EventForm({
                       value={field.value || ""}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih..." />
+                        <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Music">Musik</SelectItem>
@@ -210,10 +203,10 @@ export function EventForm({
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="location">Lokasi</Label>
+                <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
-                  placeholder="Gedung / Link Zoom"
+                  placeholder="Building / Zoom Link"
                   {...register("location")}
                 />
                 {errors.location && (
@@ -227,7 +220,7 @@ export function EventForm({
             {/* Tanggal */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="startDate">Mulai</Label>
+                <Label htmlFor="startDate">Start</Label>
                 <Input
                   id="startDate"
                   type="datetime-local"
@@ -240,7 +233,7 @@ export function EventForm({
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="endDate">Selesai</Label>
+                <Label htmlFor="endDate">End</Label>
                 <Input
                   id="endDate"
                   type="datetime-local"
@@ -254,10 +247,10 @@ export function EventForm({
               </div>
             </div>
 
-            {/* Harga & Kuota */}
+            {/* Price & Quota */}
             <div className="grid grid-cols-3 gap-4">
               <div className="grid gap-2">
-                <Label>Tipe Tiket</Label>
+                <Label>Ticket Type</Label>
                 <Controller
                   name="ticketType"
                   control={control}
@@ -270,8 +263,8 @@ export function EventForm({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Paid">Berbayar</SelectItem>
-                        <SelectItem value="Free">Gratis</SelectItem>
+                        <SelectItem value="Paid">Paid</SelectItem>
+                        <SelectItem value="Free">Free</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -279,7 +272,7 @@ export function EventForm({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="price">Harga (IDR)</Label>
+                <Label htmlFor="price">Price (IDR)</Label>
                 <Input
                   id="price"
                   type="number"
@@ -290,7 +283,7 @@ export function EventForm({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="seats">Kuota</Label>
+                <Label htmlFor="seats">Quota</Label>
                 <Input
                   id="seats"
                   type="number"
@@ -299,9 +292,9 @@ export function EventForm({
               </div>
             </div>
 
-            {/* Deskripsi */}
+            {/* Description */}
             <div className="grid gap-2">
-              <Label htmlFor="description">Deskripsi</Label>
+              <Label htmlFor="description">Description</Label>
               <textarea
                 className="flex min-h-20 w-full rounded-md border border-blue-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none"
                 id="description"
@@ -321,14 +314,14 @@ export function EventForm({
                 variant="ghost"
                 onClick={() => onOpenChange(false)}
               >
-                Batal
+                Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
-                  ? "Menyimpan..."
+                  ? "Saving..."
                   : initialData
-                    ? "Simpan Perubahan"
-                    : "Buat Event"}
+                    ? "Save Changes"
+                    : "Create Event"}
               </Button>
             </div>
           </form>

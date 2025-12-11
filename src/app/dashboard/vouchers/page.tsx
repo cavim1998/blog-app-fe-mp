@@ -63,10 +63,10 @@ export default function VouchersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-blue-950">
-            Voucher & Promosi
+            Vouchers & Promotions
           </h1>
           <p className="text-blue-500">
-            Buat kode diskon untuk meningkatkan penjualan tiket.
+            Create discount codes to increase ticket sales.
           </p>
         </div>
         <Button
@@ -74,11 +74,11 @@ export default function VouchersPage() {
           className="gap-2 bg-blue-600 hover:bg-blue-700"
         >
           <Plus className="h-4 w-4" />
-          Buat Voucher
+          Create Voucher
         </Button>
       </div>
 
-      <Separator className="h-[1px] bg-blue-100" />
+      <Separator className="h-px bg-blue-100" />
 
       {/* List Voucher Cards */}
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -104,7 +104,7 @@ export default function VouchersPage() {
                   </span>
                 ) : (
                   <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-bold text-gray-600">
-                    {isSoldOut ? "Habis" : "Kedaluwarsa"}
+                    {isSoldOut ? "Sold" : "Expired"}
                   </span>
                 )}
               </div>
@@ -129,7 +129,7 @@ export default function VouchersPage() {
                 {/* Progress Bar Kuota */}
                 <div>
                   <div className="mb-1 flex justify-between text-xs">
-                    <span className="text-gray-500">Terpakai</span>
+                    <span className="text-gray-500">Used</span>
                     <span className="font-medium text-gray-900">
                       {vc.used} / {vc.usageLimit}
                     </span>
@@ -145,7 +145,7 @@ export default function VouchersPage() {
                 <div className="flex items-center gap-2 rounded bg-blue-50 p-2 text-xs text-gray-500">
                   <Calendar className="h-3.5 w-3.5 text-blue-400" />
                   <span>
-                    Berlaku s.d{" "}
+                    Valid until{" "}
                     {new Date(vc.validUntil).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "short",

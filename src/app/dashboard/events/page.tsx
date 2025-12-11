@@ -68,14 +68,14 @@ export default function EventsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-blue-950">Manajemen Event</h1>
+          <h1 className="text-3xl font-bold text-blue-950">Event Management</h1>
           <p className="text-blue-500">
-            Kelola jadwal, harga tiket, dan promosi event Anda.
+            Manage your event schedule, ticket prices, and promotions.
           </p>
         </div>
         <Button onClick={handleCreateClick} className="gap-2">
           <Plus className="h-4 w-4" />
-          Buat Event
+          Create Event
         </Button>
       </div>
 
