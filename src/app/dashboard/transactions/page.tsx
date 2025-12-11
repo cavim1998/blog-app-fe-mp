@@ -77,9 +77,9 @@ export default function TransactionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-blue-950">Transaksi</h1>
+        <h1 className="text-3xl font-bold text-blue-950">Transaction</h1>
         <p className="text-blue-500">
-          Kelola pembayaran dan konfirmasi pesanan tiket.
+          Manage payments and confirm ticket orders.
         </p>
       </div>
 
@@ -103,13 +103,15 @@ export default function TransactionsPage() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Status</SelectItem>
-              <SelectItem value="waiting_admin">Perlu Konfirmasi</SelectItem>
-              <SelectItem value="waiting_payment">
-                Menunggu Pembayaran
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="waiting_admin">
+                Waiting For Confirmation
               </SelectItem>
-              <SelectItem value="done">Selesai</SelectItem>
-              <SelectItem value="rejected">Ditolak</SelectItem>
+              <SelectItem value="waiting_payment">
+                Waiting For Payment
+              </SelectItem>
+              <SelectItem value="done">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -123,11 +125,11 @@ export default function TransactionsPage() {
               <tr>
                 <th className="px-4 py-3">Invoice</th>
                 <th className="px-4 py-3">Event</th>
-                <th className="px-4 py-3">Pembeli</th>
-                <th className="px-4 py-3">Tanggal</th>
+                <th className="px-4 py-3">Buyer</th>
+                <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Total</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Aksi</th>
+                <th className="px-4 py-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -166,7 +168,7 @@ export default function TransactionsPage() {
                         onClick={() => openDetail(tx)}
                       >
                         {tx.status === "waiting_admin"
-                          ? "Verifikasi"
+                          ? "Verification"
                           : "Detail"}
                       </Button>
                     </td>
@@ -178,7 +180,7 @@ export default function TransactionsPage() {
                     colSpan={7}
                     className="px-4 py-12 text-center text-gray-500"
                   >
-                    Tidak ada transaksi yang ditemukan.
+                    No transactions found.
                   </td>
                 </tr>
               )}

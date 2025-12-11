@@ -62,20 +62,20 @@ export function VoucherForm({
           <div className="flex flex-col space-y-1.5 text-center sm:text-left">
             <Dialog.Title className="flex items-center gap-2 text-xl font-bold text-blue-900">
               <Ticket className="h-5 w-5 text-blue-600" />
-              Buat Voucher Baru
+              Create New Voucher
             </Dialog.Title>
             <Dialog.Description className="text-sm text-gray-500">
-              Buat kode diskon untuk menarik lebih banyak pembeli.
+              Create discount codes to attract more buyers.
             </Dialog.Description>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-2">
             {/* Kode Voucher */}
             <div className="grid gap-2">
-              <Label htmlFor="code">Kode Voucher (Unik)</Label>
+              <Label htmlFor="code">Voucher Code (Unique)</Label>
               <Input
                 id="code"
-                placeholder="CONTOH: JAZZ50"
+                placeholder="Ex: EXX50"
                 className="border-2 border-dashed border-blue-200 font-mono tracking-wider uppercase focus:border-blue-500"
                 {...register("code")}
               />
@@ -84,9 +84,9 @@ export function VoucherForm({
               )}
             </div>
 
-            {/* Pilih Event */}
+            {/* Select Event */}
             <div className="grid gap-2">
-              <Label>Berlaku Untuk Event</Label>
+              <Label>Valid for Events</Label>
               <Controller
                 name="eventId"
                 control={control}
@@ -96,7 +96,7 @@ export function VoucherForm({
                     defaultValue={field.value}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih Event..." />
+                      <SelectValue placeholder="Select Event..." />
                     </SelectTrigger>
                     <SelectContent>
                       {activeEvents.map((event) => (
@@ -116,7 +116,7 @@ export function VoucherForm({
             {/* Tipe & Nilai Potongan */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Tipe Potongan</Label>
+                <Label>Discount Type</Label>
                 <Controller
                   name="type"
                   control={control}
@@ -129,9 +129,9 @@ export function VoucherForm({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="FIXED">Nominal (Rp)</SelectItem>
+                        <SelectItem value="FIXED">Price (Rp)</SelectItem>
                         <SelectItem value="PERCENTAGE">
-                          Persentase (%)
+                          Percentage (%)
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -141,7 +141,7 @@ export function VoucherForm({
 
               <div className="grid gap-2">
                 <Label htmlFor="amount">
-                  {voucherType === "FIXED" ? "Jumlah (Rp)" : "Persentase (%)"}
+                  {voucherType === "FIXED" ? "Price (Rp)" : "Percentage (%)"}
                 </Label>
                 <Input
                   id="amount"
@@ -160,7 +160,7 @@ export function VoucherForm({
             {/* Kuota & Tanggal */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="usageLimit">Kuota Pemakaian</Label>
+                <Label htmlFor="usageLimit">Usage Quota</Label>
                 <Input
                   id="usageLimit"
                   type="number"
@@ -173,7 +173,7 @@ export function VoucherForm({
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="validUntil">Berlaku Sampai</Label>
+                <Label htmlFor="validUntil">Valid Until</Label>
                 <Input
                   id="validUntil"
                   type="datetime-local"
@@ -193,14 +193,14 @@ export function VoucherForm({
                 variant="ghost"
                 onClick={() => onOpenChange(false)}
               >
-                Batal
+                Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                Buat Voucher
+                Create Voucher
               </Button>
             </div>
           </form>

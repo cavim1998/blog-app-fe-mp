@@ -41,9 +41,11 @@ export default function AttendeesPage() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-blue-950">Daftar Peserta</h1>
+          <h1 className="text-3xl font-bold text-blue-950">
+            List of Participants
+          </h1>
           <p className="text-blue-500">
-            Monitor kehadiran dan data pembeli tiket per event.
+            Monitor attendance and ticket purchase data per event.
           </p>
         </div>
       </div>
@@ -54,11 +56,11 @@ export default function AttendeesPage() {
       <div className="flex flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50 p-4 md:flex-row">
         <div className="w-full md:w-[300px]">
           <label className="mb-1.5 block text-xs font-bold tracking-wider text-blue-900 uppercase">
-            Pilih Event
+            Select Event
           </label>
           <Select value={selectedEventId} onValueChange={setSelectedEventId}>
             <SelectTrigger className="border-blue-200 bg-white">
-              <SelectValue placeholder="Pilih Event..." />
+              <SelectValue placeholder="Select Event..." />
             </SelectTrigger>
             <SelectContent>
               {eventsList.map((event) => (
@@ -73,12 +75,12 @@ export default function AttendeesPage() {
         {/* 2. Search Nama */}
         <div className="flex-1">
           <label className="mb-1.5 block text-xs font-bold tracking-wider text-blue-900 uppercase">
-            Cari Peserta
+            Search for Participants
           </label>
           <div className="relative">
             <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
             <Input
-              placeholder="Nama atau Email..."
+              placeholder="Name or Email..."
               className="border-blue-200 bg-white pl-9"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -90,20 +92,20 @@ export default function AttendeesPage() {
       {/* --- SUMMARY CARD --- */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500 uppercase">Total Peserta</p>
+          <p className="text-xs text-gray-500 uppercase">Total Participants</p>
           <p className="text-2xl font-bold text-blue-900">
             {filteredAttendees.length}
           </p>
         </div>
         <div className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500 uppercase">Sudah Check-in</p>
+          <p className="text-xs text-gray-500 uppercase">Already Checked-in</p>
           <p className="text-2xl font-bold text-green-600">
             {filteredAttendees.filter((a) => a.checkInStatus).length}
           </p>
         </div>
         <div className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500 uppercase">
-            Total Penjualan (Event Ini)
+            Total Sales (This Event)
           </p>
           <p className="text-2xl font-bold text-blue-900">
             {new Intl.NumberFormat("id-ID", {
@@ -123,12 +125,12 @@ export default function AttendeesPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-blue-100 bg-blue-50 font-semibold text-blue-900">
               <tr>
-                <th className="px-6 py-4">Nama Peserta</th>
-                <th className="px-6 py-4">Tiket</th>
-                <th className="px-6 py-4 text-center">Jml</th>
-                <th className="px-6 py-4">Total Bayar</th>
-                <th className="px-6 py-4">Waktu Beli</th>
-                <th className="px-6 py-4 text-center">Status Check-in</th>
+                <th className="px-6 py-4">Participant Name</th>
+                <th className="px-6 py-4">Ticket</th>
+                <th className="px-6 py-4 text-center">Qty</th>
+                <th className="px-6 py-4">Total Payment</th>
+                <th className="px-6 py-4">Purchase Time</th>
+                <th className="px-6 py-4 text-center">Check-in Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -173,11 +175,11 @@ export default function AttendeesPage() {
                     <td className="px-6 py-4 text-center">
                       {attendee.checkInStatus ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
-                          <CheckCircle className="h-3 w-3" /> Hadir
+                          <CheckCircle className="h-3 w-3" /> Present
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-100 px-2 py-1 text-xs font-medium text-gray-500">
-                          <XCircle className="h-3 w-3" /> Belum
+                          <XCircle className="h-3 w-3" /> Not yet
                         </span>
                       )}
                     </td>
@@ -189,11 +191,9 @@ export default function AttendeesPage() {
                     colSpan={6}
                     className="px-6 py-12 text-center text-gray-500"
                   >
-                    <p className="mb-1 font-medium">
-                      Tidak ada peserta ditemukan.
-                    </p>
+                    <p className="mb-1 font-medium">No participants found.</p>
                     <p className="text-xs">
-                      Coba ubah filter event atau kata kunci pencarian.
+                      Try changing the event filter or search keywords.
                     </p>
                   </td>
                 </tr>
