@@ -1,62 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
-import { Plus, Tag, Calendar, Hash } from "lucide-react";
+import { useState } from "react";
+import { Plus, Tag, Calendar, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
 import { VoucherForm } from "@/components/app/voucher/VoucherForm";
-import { VoucherFormValues } from "@/lib/validators/voucher";
-
-// Mock Data Awal
-const initialVouchers = [
-  {
-    id: 1,
-    code: "JAZZ50",
-    eventName: "Java Jazz Festival 2024",
-    type: "FIXED",
-    amount: 50000,
-    usageLimit: 100,
-    used: 45,
-    validUntil: "2024-05-20T23:59",
-  },
-  {
-    id: 2,
-    code: "EARLYBIRD",
-    eventName: "Tech Startup Summit",
-    type: "PERCENTAGE",
-    amount: 10,
-    usageLimit: 50,
-    used: 50, // Sold out
-    validUntil: "2024-06-01T12:00",
-  },
-];
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
+import { VoucherTypes } from "@/types/voucher";
+import { formatIDR } from "@/lib/utils";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export default function VouchersPage() {
-  const [vouchers, setVouchers] = useState(initialVouchers);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleCreateVoucher = (data: VoucherFormValues) => {
-    // Simulasi penambahan data (Di sini kita cari nama event berdasarkan ID manual utk demo)
-    const newVoucher = {
-      id: Math.random(),
-      ...data,
-      eventName: "Event ID " + data.eventId, // Mock name
-      used: 0,
-    };
-    setVouchers([newVoucher, ...vouchers] as any);
-    setIsModalOpen(false);
-  };
+  const { mutateAsync: deleteVoucher, isPending: pendingDelete } = useMutation({
+    mutationFn: async (id: number) => {
+      await axiosInstance.delete(`/voucher/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Create voucher success");
+      queryClient.invalidateQueries({ queryKey: ["vouchers"] });
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message ?? "Something went wrong!");
+    },
+  });
 
-  const formatAmount = (type: string, amount: number) => {
-    if (type === "FIXED") {
-      return new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-      }).format(amount);
-    }
-    return `${amount}% OFF`;
-  };
+  const { data: vouchers, isPending } = useQuery({
+    queryKey: ["vouchers"],
+    queryFn: async () => {
+      const blogs = await axiosInstance.get<VoucherTypes[]>("/voucher");
+      return blogs.data;
+    },
+  });
 
   return (
     <div className="space-y-6">
@@ -82,9 +61,15 @@ export default function VouchersPage() {
 
       {/* List Voucher Cards */}
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {vouchers.map((vc) => {
-          const isExpired = new Date(vc.validUntil) < new Date();
-          const isSoldOut = vc.used >= vc.usageLimit;
+        {isPending && (
+          <div className="col-span-3 my-16 text-center">
+            <p className="text-2xl font-bold">Loading...</p>
+          </div>
+        )}
+
+        {vouchers?.map((vc) => {
+          const isExpired = new Date(vc.endAt) < new Date();
+          const isSoldOut = vc.usedCount >= vc.usageLimit;
           const isActive = !isExpired && !isSoldOut;
 
           return (
@@ -118,10 +103,10 @@ export default function VouchersPage() {
                 </div>
 
                 <h3 className="text-2xl font-bold text-gray-900">
-                  {formatAmount(vc.type, vc.amount)}
+                  {formatIDR(vc.discountAmount)}
                 </h3>
                 <p className="mt-1 line-clamp-1 text-sm text-gray-500">
-                  {vc.eventName}
+                  {vc.event.title}
                 </p>
               </div>
 
@@ -131,13 +116,15 @@ export default function VouchersPage() {
                   <div className="mb-1 flex justify-between text-xs">
                     <span className="text-gray-500">Used</span>
                     <span className="font-medium text-gray-900">
-                      {vc.used} / {vc.usageLimit}
+                      {vc.usedCount} / {vc.usageLimit}
                     </span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-gray-100">
                     <div
                       className="h-2 rounded-full bg-blue-500 transition-all"
-                      style={{ width: `${(vc.used / vc.usageLimit) * 100}%` }}
+                      style={{
+                        width: `${(vc.usedCount / vc.usageLimit) * 100}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -146,7 +133,7 @@ export default function VouchersPage() {
                   <Calendar className="h-3.5 w-3.5 text-blue-400" />
                   <span>
                     Valid until{" "}
-                    {new Date(vc.validUntil).toLocaleDateString("id-ID", {
+                    {new Date(vc.endAt).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "short",
                       year: "numeric",
@@ -155,17 +142,24 @@ export default function VouchersPage() {
                     })}
                   </span>
                 </div>
+
+                <div>
+                  <Button
+                    onClick={() => deleteVoucher(vc.id)}
+                    disabled={pendingDelete}
+                    className="w-full gap-2 bg-red-600 hover:bg-red-700"
+                  >
+                    <Trash className="h-4 w-4" />
+                    Delete
+                  </Button>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      <VoucherForm
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSubmit={handleCreateVoucher}
-      />
+      <VoucherForm open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }

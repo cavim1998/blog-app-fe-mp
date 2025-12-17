@@ -15,44 +15,77 @@ import {
 } from "@/components/ui/select";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, Ticket } from "lucide-react";
-
-// Mock Data Event untuk Dropdown (Nanti dari API/Database)
-const activeEvents = [
-  { id: "1", title: "Java Jazz Festival 2024" },
-  { id: "2", title: "Tech Startup Summit" },
-  { id: "3", title: "Workshop React 19" },
-];
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
+import { EventTypes } from "@/types/event";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { PageableResponse } from "@/types/pagination";
 
 interface VoucherFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: VoucherFormValues) => void;
 }
 
-export function VoucherForm({
-  open,
-  onOpenChange,
-  onSubmit,
-}: VoucherFormProps) {
+export function VoucherForm({ open, onOpenChange }: VoucherFormProps) {
   const {
     register,
     control,
     handleSubmit,
-    watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(voucherSchema),
     defaultValues: {
       code: "",
       eventId: "",
       amount: 0,
-      type: "FIXED",
       usageLimit: 100,
-      validUntil: "",
+      startDate: "",
+      endDate: "",
     },
   });
 
-  const voucherType = watch("type");
+  const session = useSession();
+  const queryClient = useQueryClient();
+
+  const submitHandler = (data: VoucherFormValues) => {
+    write(data);
+  };
+
+  const { mutateAsync: write, isPending } = useMutation({
+    mutationFn: async (data: VoucherFormValues) => {
+      const mapData = {
+        eventId: parseInt(data.eventId),
+        code: data.code,
+        discountAmount: data.amount,
+        startAt: new Date(data.startDate).toISOString(),
+        endAt: new Date(data.endDate).toISOString(),
+        usageLimit: data.usageLimit,
+      };
+
+      await axiosInstance.post(`/voucher`, mapData, {
+        headers: { Authorization: `Bearer ${session.data?.user.userToken}` },
+      });
+    },
+    onSuccess: () => {
+      toast.success("Create voucher success");
+      queryClient.invalidateQueries({ queryKey: ["vouchers"] });
+      onOpenChange(false);
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message ?? "Something went wrong!");
+    },
+  });
+
+  const { data: events } = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => {
+      const events =
+        await axiosInstance.get<PageableResponse<EventTypes>>("/event");
+      return events.data;
+    },
+  });
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -69,13 +102,16 @@ export function VoucherForm({
             </Dialog.Description>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-2">
+          <form
+            onSubmit={handleSubmit(submitHandler)}
+            className="grid gap-4 py-2"
+          >
             {/* Kode Voucher */}
             <div className="grid gap-2">
               <Label htmlFor="code">Voucher Code (Unique)</Label>
               <Input
                 id="code"
-                placeholder="Ex: EXX50"
+                placeholder="auto generate"
                 className="border-2 border-dashed border-blue-200 font-mono tracking-wider uppercase focus:border-blue-500"
                 {...register("code")}
               />
@@ -99,8 +135,8 @@ export function VoucherForm({
                       <SelectValue placeholder="Select Event..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {activeEvents.map((event) => (
-                        <SelectItem key={event.id} value={event.id}>
+                      {events?.data.map((event) => (
+                        <SelectItem key={event.id} value={event.id.toString()}>
                           {event.title}
                         </SelectItem>
                       ))}
@@ -113,36 +149,10 @@ export function VoucherForm({
               )}
             </div>
 
-            {/* Tipe & Nilai Potongan */}
+            {/* Nilai Potongan & Kuota */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Discount Type</Label>
-                <Controller
-                  name="type"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="FIXED">Price (Rp)</SelectItem>
-                        <SelectItem value="PERCENTAGE">
-                          Percentage (%)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="amount">
-                  {voucherType === "FIXED" ? "Price (Rp)" : "Percentage (%)"}
-                </Label>
+                <Label htmlFor="amount">Price (Rp)</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -155,10 +165,6 @@ export function VoucherForm({
                   </p>
                 )}
               </div>
-            </div>
-
-            {/* Kuota & Tanggal */}
-            <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="usageLimit">Usage Quota</Label>
                 <Input
@@ -172,16 +178,33 @@ export function VoucherForm({
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Tanggal */}
+            <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="validUntil">Valid Until</Label>
+                <Label htmlFor="startDate">Start</Label>
                 <Input
-                  id="validUntil"
+                  id="startDate"
                   type="datetime-local"
-                  {...register("validUntil")}
+                  {...register("startDate")}
                 />
-                {errors.validUntil && (
+                {errors.startDate && (
                   <p className="text-xs text-red-500">
-                    {errors.validUntil.message}
+                    {errors.startDate.message}
+                  </p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="endDate">End</Label>
+                <Input
+                  id="endDate"
+                  type="datetime-local"
+                  {...register("endDate")}
+                />
+                {errors.endDate && (
+                  <p className="text-xs text-red-500">
+                    {errors.endDate.message}
                   </p>
                 )}
               </div>
@@ -197,10 +220,10 @@ export function VoucherForm({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                Create Voucher
+                {isPending ? "Saving..." : "Create Voucher"}
               </Button>
             </div>
           </form>
