@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { CategoryTypes } from "@/types/category";
@@ -32,7 +31,6 @@ interface EventFormProps {
 }
 
 export function EventForm({ open, onOpenChange, initialData }: EventFormProps) {
-  const router = useRouter();
   const session = useSession();
   const queryClient = useQueryClient();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
