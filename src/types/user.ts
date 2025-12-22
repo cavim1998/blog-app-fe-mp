@@ -1,5 +1,10 @@
-export interface User {
+export interface UserTypes {
+  id: number;
+  name: string;
   email: string;
-  objectId: string;
-  userToken: string;
+  password: string;
+  role: string;
+  referralCode: string;
+  pointsBalance: number;
+  createdAt: string;
 }

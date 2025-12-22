@@ -11,16 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Transaction,
-  initialTransactions,
-  TransactionStatus,
-} from "@/types/transaction";
+import { TransactionTypes } from "@/types/transaction";
 import { StatusBadge } from "@/components/app/transaction/StatusBadge";
 import { TransactionDetailDialog } from "@/components/app/transaction/TransactionDetailDialog";
 import { Separator } from "@radix-ui/react-separator";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
 
-// Utility Hook untuk Debounce (Mencegah search berjalan setiap ketikan)
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
   React.useEffect(() => {
@@ -31,48 +28,25 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] =
-    useState<Transaction[]>(initialTransactions);
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500); // Delay 500ms
+  const debouncedSearch = useDebounce(search, 500);
   const [filterStatus, setFilterStatus] = useState<string>("all");
-
-  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
+  const [selectedTx, setSelectedTx] = useState<TransactionTypes | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // --- LOGIKA FILTERING ---
-  const filteredData = useMemo(() => {
-    return transactions.filter((t) => {
-      const matchesSearch =
-        t.buyerName.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        t.invoiceId.toLowerCase().includes(debouncedSearch.toLowerCase());
-
-      const matchesStatus =
-        filterStatus === "all" ? true : t.status === filterStatus;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [transactions, debouncedSearch, filterStatus]);
-
-  // --- LOGIKA APPROVE/REJECT ---
-  const handleApprove = (id: string) => {
-    setTransactions((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: "done" } : t)),
-    );
-    setIsDialogOpen(false);
-  };
-
-  const handleReject = (id: string) => {
-    setTransactions((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: "rejected" } : t)),
-    );
-    setIsDialogOpen(false);
-  };
-
-  const openDetail = (transaction: Transaction) => {
+  const openDetail = (transaction: TransactionTypes) => {
     setSelectedTx(transaction);
     setIsDialogOpen(true);
   };
+
+  const { data: transactions, isPending } = useQuery({
+    queryKey: ["transactions", debouncedSearch, filterStatus],
+    queryFn: async () => {
+      const transactions =
+        await axiosInstance.get<TransactionTypes[]>("/transaction");
+      return transactions.data;
+    },
+  });
 
   return (
     <div className="space-y-6">
@@ -133,21 +107,26 @@ export default function TransactionsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredData.length > 0 ? (
-                filteredData.map((tx) => (
+              {isPending && (
+                <div className="col-span-3 my-16 text-center">
+                  <p className="text-2xl font-bold">Loading...</p>
+                </div>
+              )}
+              {transactions ? (
+                transactions?.map((tx) => (
                   <tr
                     key={tx.id}
                     className="transition-colors hover:bg-blue-50/50"
                   >
                     <td className="px-4 py-3 font-mono text-xs font-medium text-gray-500">
-                      {tx.invoiceId}
+                      {tx.id}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-900">
-                      {tx.eventName}
+                      {tx.event.title}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{tx.buyerName}</td>
+                    <td className="px-4 py-3 text-gray-600">{tx.user.name}</td>
                     <td className="px-4 py-3 text-gray-500">
-                      {new Date(tx.date).toLocaleDateString("id-ID", {
+                      {new Date(tx.createdAt).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "short",
                         hour: "2-digit",
@@ -155,7 +134,7 @@ export default function TransactionsPage() {
                       })}
                     </td>
                     <td className="px-4 py-3 font-semibold text-blue-700">
-                      {new Intl.NumberFormat("id-ID").format(tx.amount)}
+                      {new Intl.NumberFormat("id-ID").format(tx.totalPrice)}
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={tx.status} />
@@ -167,7 +146,7 @@ export default function TransactionsPage() {
                         className="text-blue-600 hover:bg-blue-50 hover:text-blue-800"
                         onClick={() => openDetail(tx)}
                       >
-                        {tx.status === "waiting_admin"
+                        {tx.status === "WAITING_FOR_ADMIN_CONFIRMATION"
                           ? "Verification"
                           : "Detail"}
                       </Button>
@@ -194,8 +173,6 @@ export default function TransactionsPage() {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         transaction={selectedTx}
-        onApprove={handleApprove}
-        onReject={handleReject}
       />
     </div>
   );

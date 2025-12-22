@@ -3,26 +3,56 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Transaction } from "@/types/transaction";
+import { TransactionTypes } from "@/types/transaction";
 import { StatusBadge } from "./StatusBadge";
 import { Separator } from "@radix-ui/react-separator";
+import Image from "next/image";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 interface TransactionDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  transaction: Transaction | null;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
+  transaction: TransactionTypes | null;
 }
 
 export function TransactionDetailDialog({
   open,
   onOpenChange,
   transaction,
-  onApprove,
-  onReject,
 }: TransactionDetailDialogProps) {
   if (!transaction) return null;
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: approved, isPending: pendingApprove } = useMutation({
+    mutationFn: async (id: number) => {
+      await axiosInstance.post(`/approve/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Approve transaction success");
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      onOpenChange(false);
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message ?? "Something went wrong!");
+    },
+  });
+
+  const { mutateAsync: rejected, isPending: pendingRejected } = useMutation({
+    mutationFn: async (id: number) => {
+      await axiosInstance.post(`/reject/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Reject transaction success");
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      onOpenChange(false);
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message ?? "Something went wrong!");
+    },
+  });
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -43,10 +73,10 @@ export function TransactionDetailDialog({
             <div className="flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50 p-4">
               <div>
                 <p className="text-xs font-semibold text-blue-600">
-                  {transaction.invoiceId}
+                  {transaction.id}
                 </p>
                 <p className="text-sm font-bold text-gray-800">
-                  {transaction.eventName}
+                  {transaction.event.title}
                 </p>
               </div>
               <StatusBadge status={transaction.status} />
@@ -57,7 +87,7 @@ export function TransactionDetailDialog({
               <div>
                 <p className="text-xs text-gray-500">Buyer</p>
                 <p className="font-medium text-gray-900">
-                  {transaction.buyerName}
+                  {transaction.user.name}
                 </p>
               </div>
               <div>
@@ -66,7 +96,7 @@ export function TransactionDetailDialog({
                   {new Intl.NumberFormat("id-ID", {
                     style: "currency",
                     currency: "IDR",
-                  }).format(transaction.amount)}
+                  }).format(transaction.totalPrice)}
                 </p>
               </div>
             </div>
@@ -78,16 +108,17 @@ export function TransactionDetailDialog({
               <p className="mb-2 text-sm font-medium text-gray-700">
                 Proof of Transfer
               </p>
-              {transaction.paymentProof ? (
+              {transaction.paymentProofUrl ? (
                 <div className="group relative flex h-64 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
                   {/* Image */}
-                  <img
-                    src={transaction.paymentProof}
+                  <Image
+                    src={transaction.paymentProofUrl}
                     alt="Proof"
                     className="h-full w-full object-contain"
+                    fill
                   />
                   <a
-                    href={transaction.paymentProof}
+                    href={transaction.paymentProofUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="absolute inset-0 hidden items-center justify-center bg-black/40 text-sm font-medium text-white group-hover:flex"
@@ -104,19 +135,21 @@ export function TransactionDetailDialog({
             </div>
 
             {/* Action Buttons (Hanya muncul jika status waiting_admin) */}
-            {transaction.status === "waiting_admin" && (
+            {transaction.status === "WAITING_FOR_ADMIN_CONFIRMATION" && (
               <div className="flex gap-3 pt-2">
                 <Button
-                  onClick={() => onReject(transaction.id)}
+                  onClick={() => rejected(transaction.id)}
                   variant="outline"
                   className="flex-1 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+                  disabled={pendingApprove || pendingRejected}
                 >
                   <XCircle className="mr-2 h-4 w-4" />
                   Reject
                 </Button>
                 <Button
-                  onClick={() => onApprove(transaction.id)}
+                  onClick={() => approved(transaction.id)}
                   className="flex-1 bg-green-600 text-white hover:bg-green-700"
+                  disabled={pendingApprove || pendingRejected}
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Approve
