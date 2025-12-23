@@ -27,9 +27,4 @@ export const sidebarItems = [
     href: "/dashboard/vouchers",
     icon: Tags,
   },
-  {
-    title: "Attendees",
-    href: "/dashboard/attendees",
-    icon: Users,
-  },
 ];

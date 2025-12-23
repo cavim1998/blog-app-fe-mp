@@ -42,7 +42,7 @@ export function SignupForm({
 
   const { mutateAsync: register, isPending } = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      const result = await axiosInstance.post("/api/users/register", {
+      const result = await axiosInstance.post("/auth/register", {
         email: data.email,
         password: data.password,
         name: data.name,

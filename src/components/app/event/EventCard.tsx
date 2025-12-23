@@ -2,6 +2,7 @@ import { EventTypes } from "@/types/event";
 import { formatIDR } from "@/lib/utils";
 import { MapPin, Calendar, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 interface EventCardProps {
@@ -10,7 +11,13 @@ interface EventCardProps {
 }
 
 export function EventCard(props: EventCardProps) {
+  const router = useRouter();
   const { event, handleEditClick } = props;
+
+  const goListAttendee = () => {
+    router.push(`/dashboard/events/${event.id}/attendees`);
+  };
+
   return (
     <div
       key={event.id}
@@ -70,6 +77,13 @@ export function EventCard(props: EventCardProps) {
             className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50"
           >
             Edit Detail
+          </Button>
+          <Button
+            onClick={() => goListAttendee()}
+            variant="outline"
+            className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+          >
+            Attendee List
           </Button>
         </div>
       </div>
