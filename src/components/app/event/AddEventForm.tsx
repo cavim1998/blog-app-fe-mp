@@ -112,7 +112,7 @@ export function EventForm({ open, onOpenChange, initialData }: EventFormProps) {
       formData.append("price", data.price.toString());
       formData.append("startAt", new Date(data.startDate).toISOString());
       formData.append("endAt", new Date(data.endDate).toISOString());
-      formData.append("totaSeats", data.availableSeats.toString());
+      formData.append("totalSeats", data.availableSeats.toString());
       formData.append("isFree", String(data.ticketType === "Free"));
       formData.append("image", data.image);
 

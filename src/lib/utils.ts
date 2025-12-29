@@ -24,3 +24,17 @@ export const useDebounce = <T>(value: T, delay: number): T => {
   }, [value, delay]);
   return debouncedValue;
 };
+
+export const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+export const formatNumber = (value: number) => {
+  return value.toLocaleString("id-ID");
+};

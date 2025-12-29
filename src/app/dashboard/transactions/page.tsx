@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,7 @@ import { TransactionDetailDialog } from "@/components/app/transaction/Transactio
 import { Separator } from "@radix-ui/react-separator";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  React.useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-}
+import { useDebounce } from "@/lib/utils";
 
 export default function TransactionsPage() {
   const [search, setSearch] = useState("");
