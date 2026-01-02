@@ -6,13 +6,25 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
 import { EventForm } from "@/components/app/event/AddEventForm";
 import { EventFormValues } from "@/lib/validators/event";
-import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/lib/axios";
-import { EventTypes } from "@/types/event";
-import { PageableResponse } from "@/types/pagination";
-import PaginationSection from "@/components/Pagination";
-import { EventCard } from "@/components/app/event/EventCard";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { formatIDR } from "@/lib/utils";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createEvent } from '@/lib/events';
+
+const initialEvents = [
+  {
+    id: 1,
+    title: "Java Jazz Festival 2024",
+    location: "JIExpo Kemayoran",
+    startDate: "2024-05-24T18:00",
+    endDate: "2024-05-24T23:00",
+    description: "Festival jazz terbesar di Jakarta.",
+    category: "Music",
+    price: 350000,
+    ticketType: "Paid",
+    availableSeats: 5000,
+    image: "",
+  },
+];
 
 export default function EventsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,21 +33,58 @@ export default function EventsPage() {
   );
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data: events, isPending } = useQuery({
-    queryKey: ["events", isModalOpen, page],
-    queryFn: async () => {
-      const blogs = await axiosInstance.get<PageableResponse<EventTypes>>(
-        "/event",
-        {
-          params: { page },
-        },
-      );
-      return blogs.data;
+  const queryClient = useQueryClient();
+
+  const createEventMutation = useMutation({
+    mutationFn: createEvent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
     },
   });
 
-  const onClickPagination = (page: number) => {
-    setPage(page);
+  const handleSaveEvent = async (data: EventFormValues) => {
+    let imageUrl = data.image;
+    if (data.image instanceof File) {
+      imageUrl = URL.createObjectURL(data.image);
+    }
+
+    const eventData = {
+      title: data.title,
+      description: data.description,
+      location: data.location,
+      startAt: data.startDate,
+      endAt: data.endDate,
+      price: data.price,
+      totalSeats: data.availableSeats,
+      availableSeats: data.availableSeats,
+      isFree: data.ticketType === 'Free',
+      image: imageUrl as string,
+      category: { id: 1, name: data.category },
+      organizer: { id: 1, name: 'Default Organizer' },
+      slug: data.title.toLowerCase().replace(/\s+/g, '-'),
+    };
+
+    try {
+      await createEventMutation.mutateAsync(eventData);
+      // Update local state for UI
+      if (editingEvent) {
+        const updatedEvents = events.map((ev) =>
+          ev.title === editingEvent.title
+            ? { ...ev, ...data, image: imageUrl }
+            : ev,
+        );
+        setEvents(updatedEvents);
+      } else {
+        const newEvent = {
+          id: Math.random(),
+          ...data,
+          image: imageUrl,
+        };
+        setEvents([newEvent, ...events]);
+      }
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
   };
 
   const handleEditClick = (event: EventTypes) => {
