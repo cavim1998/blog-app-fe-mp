@@ -1,14 +1,13 @@
-import { EventTypes } from "./event";
+// DATA SEMENTARA
 
-export interface VoucherTypes {
-  id: number;
-  organizerId: number;
-  eventId: number;
-  event: EventTypes;
-  code: string;
-  discountAmount: number;
-  startAt: string;
-  endAt: string;
-  usageLimit: number;
-  usedCount: number;
+export type Voucher = {
+  id: number
+  organizerId: number
+  eventId: number
+  code: string
+  discountAmount: number
+  startAt: string
+  endAt: string
+  usageLimit: number
+  usedCount: number
 }

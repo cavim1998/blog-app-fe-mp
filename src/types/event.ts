@@ -1,20 +1,27 @@
-import { CategoryTypes } from "./category";
+// DATA SEMENTARA
 
-export interface EventTypes {
-  id: number;
-  organizerId: number;
-  title: string;
-  description: string;
-  categoryId: number;
-  category: CategoryTypes;
-  location: string;
-  price: number;
-  startAt: string;
-  endAt: string;
-  totaSeats: number;
-  availableSeats: number;
-  isFree: boolean;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
+export type Event = {
+  id: number
+  slug: string
+  title: string
+  description: string
+  location: string
+  price: number
+  startAt: string
+  endAt: string
+  totalSeats: number
+  availableSeats: number
+  isFree: boolean
+  image: string
+
+  category: {
+    id: number
+    name: string
+  }
+
+  organizer: {
+    id: number
+    name: string
+    avatar?: string
+  }
 }
