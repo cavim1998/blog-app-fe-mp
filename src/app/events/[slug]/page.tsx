@@ -26,11 +26,11 @@ export default async function EventDetail({ params }: Props) {
     <>
       <Navbar />
 
-      <div className="container mx-auto px-4 py-10">
-        <div className="grid grid-cols-3 gap-4">
+      <div className="container mx-auto px-3 sm:px-4 md:px-4 py-6 sm:py-8 md:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
 
-          <div className="lg:col-span-2 space-y-6">
-            <div className="w-full h-80 rounded-2xl overflow-hidden bg-gray-100">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="w-full h-48 sm:h-64 md:h-80 rounded-lg sm:rounded-2xl overflow-hidden bg-gray-100">
               {event.image ? (
                 <img
                   src={event.image}
@@ -45,28 +45,28 @@ export default async function EventDetail({ params }: Props) {
             </div>
           </div>
 
-          <div className="bg-white p-5 h-fit space-y-3 shadow-sm rounded-2xl">
-            <h2 className="font-bold text-xl">{event.title}</h2>
+          <div className="bg-white p-3 sm:p-5 h-fit space-y-2 sm:space-y-3 shadow-sm rounded-lg sm:rounded-2xl">
+            <h2 className="font-bold text-lg sm:text-xl">{event.title}</h2>
 
-            <p className="flex items-center gap-4">
-              <FaMapMarkerAlt /> {event.location}
+            <p className="flex items-center gap-3 text-sm sm:text-base">
+              <FaMapMarkerAlt className="flex-shrink-0" /> <span className="break-words">{event.location}</span>
             </p>
 
-            <p className="flex items-center gap-4">
-              <FaCalendarAlt /> {new Date(event.startAt).toLocaleDateString()}
+            <p className="flex items-center gap-3 text-sm sm:text-base">
+              <FaCalendarAlt className="flex-shrink-0" /> {new Date(event.startAt).toLocaleDateString()}
             </p>
 
-            <p className="flex items-center gap-4">
-              <TbClockHour4Filled />
+            <p className="flex items-center gap-3 text-sm sm:text-base">
+              <TbClockHour4Filled className="flex-shrink-0" />
               {new Date(event.startAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – {new Date(event.endAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
 
-            <p className="pt-3 text-sm text-gray-600">
+            <p className="pt-2 sm:pt-3 text-xs sm:text-sm text-gray-600">
               {event.organizer.name}
             </p>
           </div>
 
-          <div className="col-span-3">
+          <div className="col-span-1 lg:col-span-3">
             <EventTabs event={event} />
           </div>
 

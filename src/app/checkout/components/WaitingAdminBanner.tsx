@@ -6,7 +6,7 @@ export default function WaitingAdminBanner() {
   if (!paying) return null
 
   return (
-    <div className="bg-purple-300 text-purple-900 px-5 py-3 rounded-xl flex items-center gap-2">
+    <div className="bg-purple-300 text-purple-900 px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl flex items-center gap-2 text-sm sm:text-base">
       ℹ️ Please wait while the admin confirms your payment.
     </div>
   )

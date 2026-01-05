@@ -12,22 +12,22 @@ export default function UserInfoCard() {
   if (!user) return null
 
   return (
-    <div className="bg-white rounded-2xl border p-6 shadow-sm space-y-3">
-      <h2 className="text-lg font-bold">My Account</h2>
+    <div className="bg-white rounded-lg sm:rounded-2xl border p-4 sm:p-6 shadow-sm space-y-3">
+      <h2 className="text-base sm:text-lg font-bold">My Account</h2>
 
       <div>
-        <p className="text-sm text-gray-500">Name</p>
-        <p className="font-semibold">{user.name}</p>
+        <p className="text-xs sm:text-sm text-gray-500">Name</p>
+        <p className="font-semibold text-sm sm:text-base">{user.name}</p>
       </div>
 
       <div>
-        <p className="text-sm text-gray-500">Email</p>
-        <p className="font-semibold">{user.email}</p>
+        <p className="text-xs sm:text-sm text-gray-500">Email</p>
+        <p className="font-semibold text-sm sm:text-base break-all">{user.email}</p>
       </div>
 
       <div>
-        <p className="text-sm text-gray-500">Points</p>
-        <p className="font-semibold">{user.pointsBalance} pts</p>
+        <p className="text-xs sm:text-sm text-gray-500">Points</p>
+        <p className="font-semibold text-sm sm:text-base">{user.pointsBalance} pts</p>
       </div>
     </div>
   )

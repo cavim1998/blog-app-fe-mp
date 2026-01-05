@@ -48,29 +48,29 @@ export default function FirstMainSec() {
                     width={1400}
                     height={500}
                     priority
-                    className="w-full h-90 object-cover"
+                    className="w-full h-52 sm:h-64 md:h-80 lg:h-96 object-cover"
                 />
             </Link>
 
             {/* Title Overlay */}
-            <div className="absolute bottom-6 left-6 bg-black/60 px-4 py-2 rounded-lg text-white text-lg font-semibold">
+            <div className="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 bg-black/60 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-white text-sm sm:text-base md:text-lg font-semibold">
                 {active.title}
             </div>
 
             {/* Left */}
             <button
                 onClick={prev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 w-11 h-11 rounded-full flex items-center justify-center shadow hover:scale-110 transition"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center shadow hover:scale-110 transition"
             >
-                <ChevronLeft />
+                <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
             </button>
 
             {/* Right */}
             <button
                 onClick={next}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 w-11 h-11 rounded-full flex items-center justify-center shadow hover:scale-110 transition"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center shadow hover:scale-110 transition"
             >
-                <ChevronRight />
+                <ChevronRight size={20} className="sm:w-6 sm:h-6" />
             </button>
         </div>
     );

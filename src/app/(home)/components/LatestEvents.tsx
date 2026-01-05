@@ -14,12 +14,12 @@ const LatestEvents = () => {
     });
 
     return (
-        <div className='container mx-auto mt-12'>
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold">Latest Events</h2>
+        <div className='container mx-auto mt-8 sm:mt-10 md:mt-12'>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-4 md:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold">Latest Events</h2>
 
                 <Link href="/events">
-                    <Button variant="outline" className="rounded-full hover:bg-blue-500 hover:text-white transition">
+                    <Button variant="outline" className="rounded-full hover:bg-blue-500 hover:text-white transition w-full sm:w-auto">
                         See all
                     </Button>
                 </Link>

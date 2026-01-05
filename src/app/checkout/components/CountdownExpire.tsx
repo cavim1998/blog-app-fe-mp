@@ -17,9 +17,9 @@ export default function CountdownExpire() {
     if (left <= 0) return null
 
     return (
-        <div className="bg-yellow-400 text-black px-5 py-3 rounded-xl flex justify-between items-center">
+        <div className="bg-yellow-400 text-black px-3 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-xs sm:text-sm">
             <span>⏰ Your order will expire in</span>
-            <b>{Math.floor(left / 60000)}:{Math.floor((left % 60000) / 1000).toString().padStart(2, "0")}</b>
+            <b className="text-sm sm:text-base font-bold">{Math.floor(left / 60000)}:{Math.floor((left % 60000) / 1000).toString().padStart(2, "0")}</b>
         </div>
     )
 }
