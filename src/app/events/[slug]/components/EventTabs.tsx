@@ -153,31 +153,31 @@ export default function EventTabs({ event }: { event: Event }) {
 
 
   return (
-    <div className="bg-white rounded-2xl p-4 space-y-4 shadow-sm">
-      <div className="flex gap-6 border-b">
+    <div className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 shadow-sm">
+      <div className="flex gap-3 sm:gap-6 border-b overflow-x-auto">
         <button onClick={() => setTab("desc")}
-          className={`pb-2 font-semibold ${tab === "desc" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"}`}>
+          className={`pb-2 font-semibold text-sm sm:text-base whitespace-nowrap ${tab === "desc" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"}`}>
           Description
         </button>
 
         <button onClick={() => setTab("ticket")}
-          className={`pb-2 font-semibold ${tab === "ticket" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"}`}>
+          className={`pb-2 font-semibold text-sm sm:text-base whitespace-nowrap ${tab === "ticket" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"}`}>
           Tickets
         </button>
 
         <button onClick={() => setTab("rating")}
-          className={`pb-2 font-semibold ${tab === "rating" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"}`}>
+          className={`pb-2 font-semibold text-sm sm:text-base whitespace-nowrap ${tab === "rating" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-500"}`}>
           Ratings
         </button>
       </div>
 
-      {tab === "desc" && <p className="text-gray-700 leading-relaxed">{event.description}</p>}
+      {tab === "desc" && <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{event.description}</p>}
 
       {tab === "ticket" && (
-        <div className="grid grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="md:col-span-2 space-y-3 sm:space-y-4">
             {soldOutEvent && (
-              <div className="border border-red-200 bg-red-50 text-red-600 p-4 rounded-xl text-center font-semibold">
+              <div className="border border-red-200 bg-red-50 text-red-600 p-3 sm:p-4 rounded-lg sm:rounded-xl text-center font-semibold text-sm sm:text-base">
                 🚫 All tickets are sold out
               </div>
             )}
@@ -188,28 +188,28 @@ export default function EventTabs({ event }: { event: Event }) {
               const reachedLimit = current >= MAX_PER_TICKET
 
               return (
-                <div key={t.id} className={`border rounded-xl p-4 ${soldOut && "opacity-60"}`}>
-                  <div className="flex justify-between mb-2">
-                    <h3 className="font-semibold flex items-center gap-2">
+                <div key={t.id} className={`border rounded-lg sm:rounded-xl p-3 sm:p-4 ${soldOut && "opacity-60"}`}>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0 mb-2 sm:mb-3">
+                    <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2 flex-wrap">
                       {t.name}
                       {event.isFree && <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">FREE EVENT</span>}
                     </h3>
                     {soldOut && <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">SOLD OUT</span>}
                   </div>
 
-                  {!event.isFree && <p className="text-sm text-gray-500 mb-2">{t.quantityAvailable} seats left</p>}
+                  {!event.isFree && <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">{t.quantityAvailable} seats left</p>}
 
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-blue-500">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+                    <span className="font-bold text-blue-500 text-sm sm:text-base">
                       {event.isFree ? "FREE" : `Rp ${t.price.toLocaleString("id-ID")}`}
                     </span>
 
                     <div className="flex items-center gap-2">
                       <button onClick={() => changeQty(t.id, -1)} disabled={current === 0 || soldOut}
-                        className={`w-8 h-8 border rounded-lg ${current === 0 || soldOut ? "bg-gray-200 cursor-not-allowed" : "hover:bg-gray-100"}`}>−</button>
-                      <span className="w-6 text-center">{current}</span>
+                        className={`w-7 h-7 sm:w-8 sm:h-8 border rounded-lg text-sm sm:text-base ${current === 0 || soldOut ? "bg-gray-200 cursor-not-allowed" : "hover:bg-gray-100"}`}>−</button>
+                      <span className="w-5 sm:w-6 text-center text-sm">{current}</span>
                       <button onClick={() => changeQty(t.id, 1)} disabled={soldOut || reachedLimit}
-                        className={`w-8 h-8 rounded-lg ${soldOut || reachedLimit ? "bg-gray-200 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-slate-400"}`}>+</button>
+                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-sm sm:text-base font-semibold ${soldOut || reachedLimit ? "bg-gray-200 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-slate-400"}`}>+</button>
                     </div>
                   </div>
 
@@ -219,26 +219,26 @@ export default function EventTabs({ event }: { event: Event }) {
             })}
           </div>
 
-          <div className="space-y-4">
-            <div className="border rounded-xl p-4">
-              <p className="font-semibold mb-1">Total price</p>
-              <p className="text-2xl font-bold text-blue-500 mb-4">Rp {total.toLocaleString("id-ID")}</p>
+          <div className="space-y-3 sm:space-y-4">
+            <div className="border rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <p className="font-semibold text-sm sm:text-base mb-1">Total price</p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-500 mb-3 sm:mb-4">Rp {total.toLocaleString("id-ID")}</p>
               <button disabled={total === 0} onClick={checkout}
-                className={`w-full py-2 rounded-xl ${total === 0 ? "bg-slate-200" : "bg-blue-500 text-white hover:bg-slate-400"}`}>
+                className={`w-full py-2 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium ${total === 0 ? "bg-slate-200 text-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-slate-400"}`}>
                 Checkout
               </button>
             </div>
 
-            <div className="border rounded-xl p-4">
-              <p className="font-semibold mb-1">Voucher Code</p>
+            <div className="border rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <p className="font-semibold text-sm sm:text-base mb-2">Voucher Code</p>
               <div className="flex gap-2">
                 <input value={voucherCode} onChange={e => setVoucherCode(e.target.value.toUpperCase())}
-                  className="border px-3 py-2 rounded-full w-full" placeholder="XXXX" />
-                <button onClick={applyVoucher} className="px-4 rounded-full bg-blue-500 text-white hover:bg-slate-400">Apply</button>
+                  className="border px-2 sm:px-3 py-2 rounded-full w-full text-sm" placeholder="XXXX" />
+                <button onClick={applyVoucher} className="px-3 sm:px-4 rounded-full bg-blue-500 text-white hover:bg-slate-400 text-sm font-medium whitespace-nowrap">Apply</button>
               </div>
 
               {relatedVoucher && !voucherError && (
-                <div className="mt-2 text-sm bg-slate-50 border p-2 rounded">
+                <div className="mt-2 text-xs sm:text-sm bg-slate-50 border p-2 rounded">
                   <b>{relatedVoucher.code}</b> – Rp {relatedVoucher.discountAmount.toLocaleString("id-ID")} off<br />
                   Remaining: {relatedVoucher.usageLimit - relatedVoucher.usedCount}
                 </div>
@@ -251,33 +251,33 @@ export default function EventTabs({ event }: { event: Event }) {
       )}
 
       {tab === "rating" && (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
 
-          <h3 className="font-bold text-lg">Reviews & Ratings</h3>
+          <h3 className="font-bold text-base sm:text-lg">Reviews & Ratings</h3>
 
           {reviews.map(r => (
-            <div key={r.id} className="border rounded-2xl p-3">
-              <p className="font-semibold">{r.user.name}</p>
-              <p className="text-yellow-500">⭐ {r.rating}/5</p>
-              <p className="text-sm text-gray-600">{r.comment}</p>
+            <div key={r.id} className="border rounded-lg sm:rounded-2xl p-3 sm:p-4">
+              <p className="font-semibold text-sm sm:text-base">{r.user.name}</p>
+              <p className="text-yellow-500 text-sm sm:text-base">⭐ {r.rating}/5</p>
+              <p className="text-xs sm:text-sm text-gray-600">{r.comment}</p>
             </div>
           ))}
 
-          <div className="border rounded-xl p-4">
-            <p className="font-semibold mb-2">Leave a Review</p>
+          <div className="border rounded-lg sm:rounded-xl p-3 sm:p-4">
+            <p className="font-semibold text-sm sm:text-base mb-2">Leave a Review</p>
 
             <select value={rating} onChange={e => setRating(+e.target.value)}
-              className="border rounded-full p-2 w-full mb-2">
+              className="border rounded-full p-2 w-full mb-2 text-sm">
               {[5, 4, 3, 2, 1].map(n => <option key={n} value={n}>{n} ⭐</option>)}
             </select>
 
             <textarea value={comment}
               onChange={e => setComment(e.target.value)}
               placeholder="Write your experience..."
-              className="border rounded-2xl p-2 w-full" />
+              className="border rounded-lg sm:rounded-2xl p-2 w-full text-sm" />
 
             <button onClick={submitReview}
-              className="mt-2 bg-blue-500 text-white w-full py-2 rounded-full hover:bg-blue-400">
+              className="mt-2 bg-blue-500 text-white w-full py-2 rounded-full hover:bg-blue-400 text-sm font-medium">
               Submit Review
             </button>
           </div>

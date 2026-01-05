@@ -73,12 +73,12 @@ export default function EventBrowser() {
       )}
 
       {!isLoading && !error && (
-        <div className="flex justify-center items-center gap-2 mt-10">
+        <div className="flex flex-wrap justify-center items-center gap-1 sm:gap-2 mt-8 sm:mt-10">
 
           <button
             disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}
-            className={`px-4 py-2 rounded-lg border
+            className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg border text-sm sm:text-base
             ${page === 1 ? "cursor-not-allowed bg-gray-100 text-gray-400" : "hover:bg-gray-100"}`}
           >
             Previous
@@ -88,7 +88,7 @@ export default function EventBrowser() {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 rounded-lg border
+              className={`px-2 sm:px-3 py-1 rounded-lg border text-xs sm:text-sm
               ${page === i + 1 ? "bg-orange-500 text-white border-orange-500" : "hover:bg-gray-100"}`}
             >
               {i + 1}
@@ -98,7 +98,7 @@ export default function EventBrowser() {
           <button
             disabled={page === totalPages}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            className={`px-4 py-2 rounded-lg border
+            className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg border text-sm sm:text-base
             ${page === totalPages ? "cursor-not-allowed bg-gray-100 text-gray-400" : "hover:bg-gray-100"}`}
           >
             Next
