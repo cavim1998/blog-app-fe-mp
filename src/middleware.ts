@@ -10,6 +10,7 @@ export async function middleware(request: NextRequest) {
   const homeUrl = new URL("/", request.url);
 
   if (!token) return NextResponse.redirect(homeUrl);
+  console.log(token);
   const userData = token.user as any;
   const userRole = userData.role;
   if (!userRole || userRole.toLowerCase() !== "organizer") {
