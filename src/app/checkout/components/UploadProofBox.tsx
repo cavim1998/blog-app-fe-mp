@@ -2,8 +2,10 @@
 import { useTransactionStore } from "@/stores/transaction"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function UploadProofBox() {
+  const queryClient = useQueryClient()
   const upload = useTransactionStore(s => s.uploadProof)
   const tx = useTransactionStore(s => s.tx)
   const [file, setFile] = useState<File | null>(null)
@@ -15,6 +17,7 @@ export default function UploadProofBox() {
     if (!file) return toast.error("Upload proof first")
     try {
       setLoading(true)
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] })
       await upload(file)
       toast.success("Payment proof uploaded")
     } finally {
