@@ -10,8 +10,6 @@ export async function middleware(request: NextRequest) {
   });
   const homeUrl = new URL("/", request.url);
 
-  console.log("ini token", token);
-
   if (!token) return NextResponse.redirect(homeUrl);
   const userData = token.user as any;
   const userRole = userData.role;
