@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
-    salt: "__Secure-authjs.session-token",
+    cookieName: "__Secure-authjs.session-token",
   });
   const homeUrl = new URL("/", request.url);
 
