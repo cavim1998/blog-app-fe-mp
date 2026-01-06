@@ -17,8 +17,11 @@ export default function UploadProofBox() {
     if (!file) return toast.error("Upload proof first")
     try {
       setLoading(true)
-      await queryClient.invalidateQueries({ queryKey: ["transactions"] })
       await upload(file)
+      await queryClient.invalidateQueries({ 
+        queryKey: ["transactions"],
+        refetchType: "all"
+      })
       toast.success("Payment proof uploaded")
     } finally {
       setLoading(false)
