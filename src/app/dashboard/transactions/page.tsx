@@ -37,6 +37,7 @@ export default function TransactionsPage() {
       const transactions = await axiosInstance.get<TransactionTypes[]>(
         "/transactions/dashboard",
       );
+      console.log("Transactions from API:", transactions.data);
       return transactions.data;
     },
   });

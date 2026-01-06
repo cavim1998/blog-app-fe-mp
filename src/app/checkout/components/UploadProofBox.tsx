@@ -19,8 +19,7 @@ export default function UploadProofBox() {
       setLoading(true)
       await upload(file)
       await queryClient.invalidateQueries({ 
-        queryKey: ["transactions"],
-        refetchType: "all"
+        queryKey: ["transactions"]
       })
       toast.success("Payment proof uploaded")
     } finally {
