@@ -6,11 +6,11 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    salt: "__Secure-authjs.session-token",
   });
   const homeUrl = new URL("/", request.url);
 
   if (!token) return NextResponse.redirect(homeUrl);
-  console.log(token);
   const userData = token.user as any;
   const userRole = userData.role;
   if (!userRole || userRole.toLowerCase() !== "organizer") {
